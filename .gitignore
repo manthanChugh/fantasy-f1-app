@@ -1,0 +1,15 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Python virtual environment
+venv/
+env/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node modules (just in case)
+node_modules/
+.next/
