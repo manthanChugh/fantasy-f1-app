@@ -1,95 +1,73 @@
-import styles from './DriverCard.module.css';
+import React from 'react';
 import Image from 'next/image';
+import styles from './DriverCard.module.css';
 
-export interface DriverProps {
+interface DriverCardProps {
   id: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   team: string;
   price: number;
   points: number;
-  headshotUrl?: string;
+  imageUrl?: string;
   isSelected?: boolean;
   onSelect?: (id: string) => void;
+  disabled?: boolean;
 }
 
-export default function DriverCard({
+export const DriverCard: React.FC<DriverCardProps> = ({
   id,
-  firstName,
-  lastName,
+  name,
   team,
   price,
   points,
-  headshotUrl,
+  imageUrl,
   isSelected = false,
   onSelect,
-}: DriverProps) {
-  
-  // A helper to determine border color based on team (optional visual flair)
-  const getTeamColorClass = (teamName: string) => {
-    const normalized = teamName.toLowerCase();
-    if (normalized.includes('mercedes')) return styles.teamMercedes;
-    if (normalized.includes('ferrari')) return styles.teamFerrari;
-    if (normalized.includes('red bull')) return styles.teamRedBull;
-    if (normalized.includes('mclaren')) return styles.teamMcLaren;
-    if (normalized.includes('aston martin')) return styles.teamAstonMartin;
-    if (normalized.includes('audi')) return styles.teamAudi;
-    if (normalized.includes('alpine')) return styles.teamAlpine;
-    if (normalized.includes('cadillac')) return styles.teamCadillac;
-    if (normalized.includes('williams')) return styles.teamWilliams;
-    if (normalized.includes('racing bulls') || normalized === 'rb') return styles.teamRacingBulls;
-    if (normalized.includes('haas')) return styles.teamHaas;
-    return styles.teamDefault;
+  disabled = false,
+}) => {
+  const handleClick = () => {
+    if (!disabled && onSelect) {
+      onSelect(id);
+    }
   };
 
   return (
     <div 
-      className={`${styles.card} ${isSelected ? styles.selected : ''} ${getTeamColorClass(team)}`}
-      onClick={() => onSelect && onSelect(id)}
+      className={`glass-panel ${styles.card} ${isSelected ? styles.selected : ''} ${disabled && !isSelected ? styles.disabled : ''}`}
+      onClick={handleClick}
+      role="button"
+      tabIndex={0}
     >
       <div className={styles.imageContainer}>
-        {headshotUrl ? (
+        {imageUrl ? (
           <Image 
-            src={headshotUrl} 
-            alt={`${firstName} ${lastName}`} 
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            src={imageUrl} 
+            alt={name} 
+            fill 
             className={styles.image}
-            style={{ objectFit: 'cover', objectPosition: 'top' }}
+            unoptimized // OpenF1/Fallback images from external domains without next.config.ts setup
           />
         ) : (
-          <div className={styles.placeholderImage}>
-            <span className={styles.placeholderText}>{firstName[0]}{lastName[0]}</span>
-          </div>
+          <div className={styles.placeholder} />
         )}
+        <div className={styles.priceTag}>
+          £{price.toFixed(1)}M
+        </div>
+      </div>
+      
+      <div className={styles.details}>
+        <h3 className={styles.name}>{name}</h3>
+        <p className={styles.team}>{team}</p>
+        
+        <div className={styles.statsRow}>
+          <div className={styles.stat}>
+            <span className={styles.statLabel}>PTS</span>
+            <span className={styles.statValue}>{points}</span>
+          </div>
+        </div>
       </div>
 
-      <div className={styles.infoContainer}>
-        <div className={styles.header}>
-          <span className={styles.teamName}>{team}</span>
-          <span className={styles.points}>{points} pts</span>
-        </div>
-        
-        <h3 className={styles.driverName}>
-          <span className={styles.firstName}>{firstName}</span>
-          <span className={styles.lastName}>{lastName}</span>
-        </h3>
-        
-        <div className={styles.footer}>
-          <div className={styles.priceTag}>
-            £{price.toFixed(1)}m
-          </div>
-          <button 
-            className={`${styles.actionBtn} ${isSelected ? styles.actionBtnRemove : styles.actionBtnAdd}`}
-            onClick={(e) => {
-              e.stopPropagation(); // prevent double firing if card is also clickable
-              onSelect && onSelect(id);
-            }}
-          >
-            {isSelected ? '-' : '+'}
-          </button>
-        </div>
-      </div>
+      {isSelected && <div className={styles.selectedBadge}>✓</div>}
     </div>
   );
-}
+};

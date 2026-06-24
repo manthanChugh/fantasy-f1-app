@@ -36,7 +36,9 @@ export default async function RootLayout({
             <nav className={styles.navLinks}>
               <Link href="/dashboard" className={styles.navLink}>Dashboard</Link>
               <Link href="/team" className={styles.navLink}>My Team</Link>
+              <Link href="/drivers" className={styles.navLink}>Drivers</Link>
               <Link href="/leaderboard" className={styles.navLink}>Leaderboard</Link>
+              <Link href="/rules" className={styles.navLink}>Rules</Link>
             </nav>
 
             <div className={styles.navActions}>

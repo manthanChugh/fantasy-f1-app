@@ -2,7 +2,9 @@
 
 import { useState, useTransition } from 'react';
 import styles from './page.module.css';
-import DriverCard from '@/components/DriverCard/DriverCard';
+import { DriverCard } from '@/components/DriverCard/DriverCard';
+import { BudgetBar } from '@/components/BudgetBar/BudgetBar';
+import TeamSlot from '@/components/TeamSlot/TeamSlot';
 import { saveTeam } from './actions';
 
 export type Driver = {
@@ -39,6 +41,11 @@ export default function TeamDraftClient({ initialDrivers, userDraftedIds = [], i
     }
   };
 
+  const handleRemoveDriver = (id: string) => {
+    if (isLocked) return;
+    setSelectedDrivers(selectedDrivers.filter(d => d !== id));
+  };
+
   const handleSave = () => {
     if (selectedDrivers.length !== 5) return;
     
@@ -59,6 +66,9 @@ export default function TeamDraftClient({ initialDrivers, userDraftedIds = [], i
 
   const overBudget = currentSpend > 100;
 
+  // Map selected IDs back to Driver objects for the slots
+  const selectedDriverObjects = selectedDrivers.map(id => initialDrivers.find(d => d.id === id)!);
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -70,33 +80,44 @@ export default function TeamDraftClient({ initialDrivers, userDraftedIds = [], i
         </div>
         
         <div className={`glass-panel ${styles.budgetPanel}`}>
-          <div className={styles.budgetStats}>
-            <div>
-              <span className={styles.budgetLabel}>Drivers</span>
-              <span className={styles.budgetValue}>{selectedDrivers.length} / 5</span>
-            </div>
-            <div>
-              <span className={styles.budgetLabel}>Remaining</span>
-              <span className={`${styles.budgetValue} ${overBudget ? styles.overBudget : ''}`}>
-                £{(100 - currentSpend).toFixed(1)}M
-              </span>
-            </div>
+          <BudgetBar currentSpend={currentSpend} maxBudget={100} />
+          <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+              {selectedDrivers.length} / 5 Drivers Selected
+            </span>
+            <button 
+              className="btn-primary" 
+              onClick={handleSave}
+              disabled={selectedDrivers.length !== 5 || overBudget || isPending || isLocked}
+            >
+              {isPending ? 'Saving...' : (isLocked ? 'Locked' : 'Save Team')}
+            </button>
           </div>
-          <button 
-            className="btn-primary" 
-            onClick={handleSave}
-            disabled={selectedDrivers.length !== 5 || overBudget || isPending || isLocked}
-          >
-            {isPending ? 'Saving...' : (isLocked ? 'Locked' : 'Save Team')}
-          </button>
         </div>
+      </div>
+
+      <div className={styles.slotsContainer} style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+        {[0, 1, 2, 3, 4].map(index => (
+          <TeamSlot 
+            key={index} 
+            slotNumber={index + 1}
+            driver={selectedDriverObjects[index]} 
+            onRemove={handleRemoveDriver}
+            isLocked={isLocked}
+          />
+        ))}
       </div>
 
       <div className={styles.grid}>
         {initialDrivers.map(driver => (
           <DriverCard 
             key={driver.id}
-            {...driver}
+            id={driver.id}
+            name={`${driver.firstName} ${driver.lastName}`}
+            team={driver.team}
+            price={driver.price}
+            points={driver.points}
+            imageUrl={driver.headshotUrl}
             isSelected={selectedDrivers.includes(driver.id)}
             onSelect={handleSelectDriver}
           />

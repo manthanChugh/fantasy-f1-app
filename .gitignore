@@ -13,3 +13,7 @@ __pycache__/
 # Node modules (just in case)
 node_modules/
 .next/
+
+# Local SQL scripts (ignored)
+sql_scripts/
+*.sql

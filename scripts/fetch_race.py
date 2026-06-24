@@ -7,6 +7,7 @@ from typing import Dict, Any
 # Add backend directory to path so we can import the Pydantic models
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
 try:
+    # pyrefly: ignore [missing-import]
     from app.models import RaceResult
 except ImportError:
     print("Warning: Could not import RaceResult from backend.app.models. Proceeding without validation.")
@@ -166,10 +167,49 @@ if __name__ == "__main__":
     race_results = fetch_race_data(session_key)
     
     print("\n=== Fetch Summary ===")
-    for slug, result in race_results.items():
-        if hasattr(result, 'dict'):
-            print(result.dict())
-        else:
-            print(result)
+    
+    try:
+        # pyrefly: ignore [missing-import]
+        from app.db import get_supabase
+        supabase = get_supabase()
+        
+        # Get valid drivers from the database
+        drivers_res = supabase.table('drivers').select('id').execute()
+        valid_driver_ids = {d['id'] for d in drivers_res.data}
+        
+        insert_data = []
+        for slug, result in race_results.items():
+            if slug not in valid_driver_ids:
+                print(f"Skipping {slug} because they are not in the drivers table.")
+                continue
+                
+            data_dict = result.model_dump() if hasattr(result, 'model_dump') else result
+            # Add race_id
+            data_dict['race_id'] = session_key
             
-    print("\nNote: Please manually update 'quali_segment', 'dnf_reason', 'beat_teammate', 'dotd', and 'laps_lapped' before submission.")
+            # Remove keys not in the DB schema to prevent insertion errors
+            if 'quali_crash' in data_dict:
+                del data_dict['quali_crash']
+                
+            insert_data.append(data_dict)
+            
+        print(f"\nSaving {len(insert_data)} records to Supabase 'race_results'...")
+        # Since we might run this multiple times, upserting or just inserting for now.
+        # We will need a unique constraint on race_id + driver_id to upsert reliably,
+        # but for now we just insert.
+        # Actually, race_results has an auto-generated id, so doing multiple inserts creates duplicates.
+        # Let's delete existing results for this race_id first to be safe and idempotent.
+        supabase.table('race_results').delete().eq('race_id', session_key).execute()
+        
+        if insert_data:
+            response = supabase.table('race_results').insert(insert_data).execute()
+            print("Successfully saved race results!")
+        else:
+            print("No valid drivers to save.")
+        
+    except Exception as e:
+        print(f"Warning: Failed to save to DB. Error: {e}")
+        for slug, result in race_results.items():
+            print(result.model_dump() if hasattr(result, 'model_dump') else result)
+            
+    print("\nNote: Please manually update 'quali_segment', 'dnf_reason', 'beat_teammate', 'dotd', and 'laps_lapped' via the Admin Dashboard before running the scoring pipeline.")
