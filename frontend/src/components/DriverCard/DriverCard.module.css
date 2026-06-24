@@ -1,0 +1,164 @@
+.card {
+  position: relative;
+  background: rgba(17, 17, 17, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.selected {
+  border-color: var(--f1-red);
+  box-shadow: 0 0 16px var(--f1-red-glow);
+}
+
+/* Team Accent Colors */
+.teamMercedes { --team-color: #00D2BE; border-top: 4px solid var(--team-color); }
+.teamFerrari { --team-color: #DC0000; border-top: 4px solid var(--team-color); }
+.teamRedBull { --team-color: #0600EF; border-top: 4px solid var(--team-color); }
+.teamMcLaren { --team-color: #FF8700; border-top: 4px solid var(--team-color); }
+.teamAstonMartin { --team-color: #006F62; border-top: 4px solid var(--team-color); }
+.teamAudi { --team-color: #F50537; border-top: 4px solid var(--team-color); }
+.teamAlpine { --team-color: #00A1E8; border-top: 4px solid var(--team-color); }
+.teamCadillac { --team-color: #909090; border-top: 4px solid var(--team-color); }
+.teamWilliams { --team-color: #1868DB; border-top: 4px solid var(--team-color); }
+.teamRacingBulls { --team-color: #6C98FF; border-top: 4px solid var(--team-color); }
+.teamHaas { --team-color: #9C9FA2; border-top: 4px solid var(--team-color); }
+.teamDefault { --team-color: var(--text-secondary); border-top: 4px solid var(--team-color); }
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  /* Uses the team color to cast a subtle glow behind the driver, fading into transparency */
+  background: radial-gradient(circle at center 40%, color-mix(in srgb, var(--team-color) 25%, transparent) 0%, transparent 65%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.image {
+  mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+}
+
+.placeholderImage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a1a;
+}
+
+.placeholderText {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.1);
+}
+
+.infoContainer {
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.teamName {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.points {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.driverName {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  margin-bottom: var(--spacing-sm);
+}
+
+.firstName {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.lastName {
+  font-size: 1.4rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.priceTag {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--f1-teal);
+}
+
+.actionBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.actionBtnAdd {
+  background-color: var(--text-primary);
+  color: var(--bg-deep);
+}
+
+.actionBtnAdd:hover {
+  background-color: var(--f1-teal);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.actionBtnRemove {
+  background-color: var(--f1-red);
+  color: #fff;
+}
+
+.actionBtnRemove:hover {
+  background-color: #E01500;
+  transform: scale(1.1);
+}

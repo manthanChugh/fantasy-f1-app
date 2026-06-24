@@ -1,0 +1,113 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: rgba(5, 5, 5, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+}
+
+.navContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.navLinks {
+  display: flex;
+  gap: var(--spacing-xl);
+}
+
+.navLink {
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+  position: relative;
+}
+
+.navLink:hover {
+  color: var(--text-primary);
+}
+
+/* Subtle glow underline on hover */
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--f1-red);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 8px var(--f1-red-glow);
+}
+
+.navLink:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.mainContent {
+  margin-top: 70px; /* Offset for fixed header */
+  min-height: calc(100vh - 70px);
+}
+
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 768px) {
+  .navLinks {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background: rgba(5, 5, 5, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0;
+    z-index: 100;
+    gap: 0;
+  }
+
+  .navLink {
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .navLink::after {
+    top: 0;
+    bottom: auto;
+  }
+
+  .mainContent {
+    margin-bottom: 65px; /* Offset for bottom nav */
+  }
+}
